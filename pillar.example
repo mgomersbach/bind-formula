@@ -305,6 +305,12 @@ bind:
                                                   # who accesses the view, and then specify the appropriate ACL name under
                                                   # the 'match_clients' sub-key of your view.
 
+  configured_policies:                                    # And now for some policies
+    home-policy:                                          # Our policy's name
+      keys:                                               # The keys that can update the zone
+        ksk: lifetime unlimited algorithm ECDSAP256SHA256 # The key-signing key
+        zsk: lifetime 30d algorithm ECDSAP256SHA256       # The zone-signing key
+
 ### Define zone records in pillar ###
 bind:
   available_zones:

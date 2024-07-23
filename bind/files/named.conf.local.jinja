@@ -55,6 +55,14 @@ zone "{{ key }}" {
   {%- endfor %}
   };
   {%- endif %}
+  {%- if args['dnssec-policy'] is defined %}
+  dnssec-policy "{{ args['dnssec-policy'] }}";
+  {%- endif %}
+  {%- if args['inline-signing'] is defined %}
+  {%- if args['inline-signing'] %}
+  inline-signing yes;
+  {%- endif %}
+  {%- endif %}
   {%- if args['allow-transfer'] is defined %}
   allow-transfer { {{ args.get('allow-transfer', []) | join('; ') }}; };
   {%- endif %}
@@ -182,3 +190,19 @@ statistics-channels {
     {%- endfor %}
 };
 {%- endif %}
+
+{%- for policy, policy_data in salt['pillar.get']('bind:configured_policies', {})|dictsort %}
+dnssec-policy "{{ policy }}" {
+  {%- for key, value in policy_data.items() %}
+  {%- if key == 'keys' %}
+  keys {
+    {%- for key, value in value.items() %}
+    {{ key }} {{ value }};
+    {%- endfor %}
+  };
+  {%- else %}
+  {{ key }} {{ value }};
+  {%- endif %}
+  {%- endfor %}
+};
+{%- endfor %}
